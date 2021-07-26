@@ -42,6 +42,7 @@
             }
         }
     }
+    console.log(tag, `*** Why did ${displayName} render? *** Results`, results);
     console.log(tag, displayName, "---- END RENDER ----");
 
     return results;
