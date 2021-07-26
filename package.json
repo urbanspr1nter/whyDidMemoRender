@@ -1,0 +1,22 @@
+{
+  "name": "why-did-memo-render",
+  "version": "1.0.0",
+  "description": "whyDidMemoRender will give hints about what props triggered a React memo component to render",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/urbanspr1nter/whyDidMemoRender.git"
+  },
+  "keywords": [
+    "why-did-memo-render"
+  ],
+  "author": "Roger Ngo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/urbanspr1nter/whyDidMemoRender/issues"
+  },
+  "homepage": "https://github.com/urbanspr1nter/whyDidMemoRender#readme"
+}
