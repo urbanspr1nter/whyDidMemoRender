@@ -31,7 +31,8 @@
     console.log(tag, displayName, "Props are prev, next", prevProps, nextProps);
     console.log(tag, displayName, "Are props equal?", prevProps === nextProps);
     for(const k of unionKeys) {
-        console.log(tag, displayName, k, "exists in", "prevProps", !!prevProps[k], "nextProps", !!nextProps[k]);
+        console.log(tag, displayName, k, "consistent in both prevProps, and nextProps",
+            (prevProps[k] && nextProps[k]) || (!prevProps[k] && !nextProps[k]));
         console.log(tag, displayName, k, "equal?", prevProps[k] === nextProps[k]);
 
         if (prevProps[k] !== nextProps[k]) {
@@ -42,7 +43,12 @@
             }
         }
     }
-    console.log(tag, `*** Why did ${displayName} render? *** Results`, results);
+    if (Object.keys(results).length > 0) {
+        console.log(tag, `*** Why did ${displayName} render? *** Results`, results);
+    } else {
+        console.log(tag, `*** ${displayName} WILL NOT render ***`, results);
+    }
+
     console.log(tag, displayName, "---- END RENDER ----");
 
     return results;
