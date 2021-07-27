@@ -28,12 +28,12 @@
     const results = {};
 
     console.log(tag, displayName, "---- BEGIN RENDER ----");
-    console.log(tag, displayName, "Props are prev, next", prevProps, nextProps);
-    console.log(tag, displayName, "Are props equal?", prevProps === nextProps);
+    console.log(tag, displayName, "1. Props are prev, next", prevProps, nextProps);
+    console.log(tag, displayName, "2. Are props equal?", prevProps === nextProps);
     for(const k of unionKeys) {
-        console.log(tag, displayName, k, "consistent in both prevProps, and nextProps",
-            (prevProps[k] && nextProps[k]) || (!prevProps[k] && !nextProps[k]));
-        console.log(tag, displayName, k, "equal?", prevProps[k] === nextProps[k]);
+        console.log(tag, displayName, k, "3. Consistent in both prevProps, and nextProps?",
+            (!!prevProps[k] && !!nextProps[k]) || (!prevProps[k] && !nextProps[k]));
+        console.log(tag, displayName, k, "4. Are properties shallowly equal?", prevProps[k] === nextProps[k]);
 
         if (prevProps[k] !== nextProps[k]) {
             results[k] = {
@@ -52,6 +52,18 @@
     console.log(tag, displayName, "---- END RENDER ----");
 
     return results;
+}
+
+/**
+ * Used as an adapter to whyDidMemoRender for the React.memo comparer function
+ * @param {*} prevProps 
+ * @param {*} nextProps 
+ * @returns 
+ */
+export const memoProxy = (prevProps, nextProps) => {
+    whyDidMemoRender("WHY", "MemoComponent", prevProps, nextProps);
+
+    return prevProps === nextProps;
 }
 
 /**

@@ -6,9 +6,13 @@
  * 
  * 2021
  */
-import whyDidMemoRender, { diffReporter } from "./whyDidMemoRender";
+import whyDidMemoRender, {
+    diffReporter,
+    memoProxy 
+} from "./whyDidMemoRender";
 
 export {
     whyDidMemoRender,
+    memoProxy,
     diffReporter
 };
