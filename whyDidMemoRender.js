@@ -1,3 +1,5 @@
+import { isEqual } from "lodash";
+
 /**
  * whyDidMemoRender
  * 
@@ -27,18 +29,15 @@
 
     const results = {};
 
+    const isDeepEqual = isEqual(prevProps, nextProps);
     console.log(tag, displayName, "---- BEGIN RENDER ----");
-    console.log(tag, displayName, "1. Props are prev, next", prevProps, nextProps);
-    console.log(tag, displayName, "2. Are props equal?", prevProps === nextProps);
+    console.log(tag, displayName, "Props are prev, next", prevProps, nextProps);
     for(const k of unionKeys) {
-        console.log(tag, displayName, k, "3. Consistent in both prevProps, and nextProps?",
-            (!!prevProps[k] && !!nextProps[k]) || (!prevProps[k] && !nextProps[k]));
-        console.log(tag, displayName, k, "4. Are properties shallowly equal?", prevProps[k] === nextProps[k]);
-
-        if (prevProps[k] !== nextProps[k]) {
+        if (prevProps[k] !== nextProps[k] || !isDeepEqual) {
             results[k] = {
                 prev: prevProps[k],
                 next: nextProps[k],
+                reason: findReasonWhyRenderForProp(prevProps[k], nextProps[k], isDeepEqual),
                 debug: () => console.log(tag, displayName, "prop:", k, "difference", prevProps[k], nextProps[k])
             }
         }
@@ -52,6 +51,25 @@
     console.log(tag, displayName, "---- END RENDER ----");
 
     return results;
+}
+
+/**
+ * Finds reasons why the render might have occurred.
+ * @param {*} obj1 
+ * @param {*} obj2 
+ * @param {*} isDeepEqual 
+ * @returns 
+ */
+function findReasonWhyRenderForProp(obj1, obj2, isDeepEqual) {
+    if (obj1 !== obj2 && !isDeepEqual) {
+        return "Props have changed and are different objects.";
+    }
+    if (obj1 === obj2 && !isDeepEqual) {
+        return "Props have changed.";
+    }
+    if (obj1 !== obj2 && isDeepEqual) {
+        return "Objects are different.";
+    }
 }
 
 /**

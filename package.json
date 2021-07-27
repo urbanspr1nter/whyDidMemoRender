@@ -1,6 +1,6 @@
 {
   "name": "why-did-memo-render",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "whyDidMemoRender will give hints about what props triggered a React memo component to render",
   "main": "index.js",
   "scripts": {
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/urbanspr1nter/whyDidMemoRender/issues"
   },
-  "homepage": "https://github.com/urbanspr1nter/whyDidMemoRender#readme"
+  "homepage": "https://github.com/urbanspr1nter/whyDidMemoRender#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
