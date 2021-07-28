@@ -29,10 +29,10 @@ import { isEqual } from "lodash";
 
     const results = {};
 
-    const isDeepEqual = isEqual(prevProps, nextProps);
     console.log(tag, displayName, "---- BEGIN RENDER ----");
     console.log(tag, displayName, "Props are prev, next", prevProps, nextProps);
     for(const k of unionKeys) {
+        const isDeepEqual = isEqual(prevProps[k], nextProps[k]);
         if (prevProps[k] !== nextProps[k] || !isDeepEqual) {
             results[k] = {
                 prev: prevProps[k],
@@ -68,6 +68,9 @@ function findReasonWhyRenderForProp(obj1, obj2, isDeepEqual) {
         return "Props have changed.";
     }
     if (obj1 !== obj2 && isDeepEqual) {
+        return "Props are same, but objects different."
+    }
+    if (obj1 !== obj2) {
         return "Objects are different.";
     }
 }
