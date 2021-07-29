@@ -15,7 +15,7 @@ import { isEqual } from "lodash";
  * @param {*} prevProps previous props that is used in render
  * @param {*} nextProps next props that will be used in render
  */
- export default function whyDidMemoRender(tag, displayName, prevProps, nextProps) {
+ export default function whyDidMemoRender(tag, displayName, prevProps, nextProps, comparer) {
     const prevPropsKeys = Object.keys(prevProps);
     const nextPropsKeys = Object.keys(nextProps);
 
@@ -34,11 +34,12 @@ import { isEqual } from "lodash";
     for(const k of unionKeys) {
         const isDeepEqual = isEqual(prevProps[k], nextProps[k]);
         if (prevProps[k] !== nextProps[k] || !isDeepEqual) {
+            const diff = diffProps(prevProps[k], nextProps[k]);
             results[k] = {
                 prev: prevProps[k],
                 next: nextProps[k],
                 reason: findReasonWhyRenderForProp(prevProps[k], nextProps[k], isDeepEqual),
-                debug: () => console.log(tag, displayName, "prop:", k, "difference", prevProps[k], nextProps[k])
+                diff
             }
         }
     }
@@ -50,7 +51,10 @@ import { isEqual } from "lodash";
 
     console.log(tag, displayName, "---- END RENDER ----");
 
-    return results;
+    return {
+        compareResult: comparer ? comparer() : prevProps === nextProps,
+        report: results
+    };
 }
 
 /**
@@ -99,4 +103,29 @@ export function diffReporter(results) {
             result.debug();
         }
     }
+}
+
+// First Level diffing
+function diffProps(o1, o2) {
+    const results = {};
+    const o2Keys = Object.keys(o2);
+
+    for(const k of o2Keys) {
+        if (!_.isEqual(o1[k], o2[k])) {
+            try {
+                results[k] = {
+                    prevStr: JSON.stringify(o1[k]),
+                    nextStr: JSON.stringify(o2[k])
+                };
+            } catch(error) {
+                results[k] = {
+                    err: "Could not stringify. Objects used instead for user handling of comparison",
+                    prevStr: o1[k],
+                    nextStr: o2[k]
+                }
+            }
+        }
+    }
+
+    return results;
 }
