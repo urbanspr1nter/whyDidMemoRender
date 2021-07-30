@@ -29,8 +29,6 @@ import { isEqual } from "lodash";
 
     const results = {};
 
-    console.log(tag, displayName, "---- BEGIN RENDER ----");
-    console.log(tag, displayName, "Props are prev, next", prevProps, nextProps);
     for(const k of unionKeys) {
         const isDeepEqual = isEqual(prevProps[k], nextProps[k]);
         if (prevProps[k] !== nextProps[k] || !isDeepEqual) {
@@ -43,17 +41,16 @@ import { isEqual } from "lodash";
             }
         }
     }
-    console.log("%c WHY RESULTS", "font-size: medium; font-weight: bold");
+
+    console.log("%cWHY RESULTS", "font-size: medium; font-weight: bold");
+    console.log(tag, displayName, "Props are prev, next", prevProps, nextProps);
     if (Object.keys(results).length > 0) {
-        console.log("%c 🔥🔄🔥 WILL RENDER", "font-weight: bold");
-        console.log(`${tag} *** Why did ${displayName} render? *** Results`, results);
+        console.log("%cWILL RENDER", "font-weight: bold");
+        console.log(`${tag} *** ${displayName} RESULTS ***`, results);
     } else {
-        console.log("%c 🛑⏹️🛑 WONT RENDER", "font-weight: bold");
-        console.log(`${tag} *** ${displayName} WILL NOT render ***`, results);
+        console.log("%cWONT RENDER", "font-weight: bold");
+        console.log(`${tag} *** ${displayName} RESULTS ***`, results);
     }
-
-    console.log(tag, displayName, "---- END RENDER ----");
-
     return {
         compareResult: comparer ? comparer() : prevProps === nextProps,
         report: results
@@ -112,11 +109,44 @@ export function diffReporter(results) {
 function diffProps(o1, o2) {
     const results = {};
 
-    if (!o2) {
+    if (!o1 && !o2) {
         return results;
     }
 
-    if (typeof o1 === "object" && typeof o2 === "object") {
+    results["why_warnings"] = [];
+    results["why_functions"] = [];
+    results["why_primitives"] = [];
+    results["why_errors"] = [];
+
+    if (!o1 || !o2) {
+        if ((!o1 && o2 && typeof o2 === "object")
+                || (!o2 && o1 && typeof o1 === "object")) {
+            results["why_warnings"].push({
+                message: "one of the objects is null, or undefined",
+                prevStr: o1,
+                nextStr: o2
+            });
+        } else if(!o1 && o2 && typeof o2 === "function") {
+            results["why_warnings"].push({
+                message: "one of the objects is null, or undefined",
+                prevStr: o1,
+                nextStr: o2.toString()
+            });
+        } else if(!o2 && o1 && typeof o1 === "function") {
+            results["why_warnings"].push({
+                message: "one of the functions is null, or undefined",
+                prevStr: o1.toString(),
+                nextStr: o2
+            });
+        } else if(!o1 || !o2) {
+            results["why_warnings"].push({
+                message: "one of the props is null, or undefined",
+                prevStr: o1 ? JSON.stringify(o1) : o1,
+                nextStr: o2 ? JSON.stringify(o2) : o2
+            });
+        }
+    }
+    else if (typeof o1 === "object" && typeof o2 === "object") {
         const o2Keys = Object.keys(o2);
 
         for(const k of o2Keys) {
@@ -127,11 +157,6 @@ function diffProps(o1, o2) {
                         nextStr: JSON.stringify(o2[k])
                     };
                 } catch(error) {
-                    results[k] = {
-                        prevStr: o1[k],
-                        nextStr: o2[k]
-                    };
-                    results["why_warnings"] = results["why_warnings"] || [];
                     results["why_warnings"].push({
                         err: "Could not stringify. Objects used instead for user handling of comparison",
                         k,
@@ -142,27 +167,22 @@ function diffProps(o1, o2) {
             }
         }
     } else if(typeof o1 === "function" && typeof o2 === "function") {
-        results["why_functions"] = results["why_functions"] || [];
         results["why_functions"] = results.push({
             prevStr: o1.toString(),
             nextStr: o2.toString()
         });
     } else if(typeof o1 === typeof o2) {
-        results["why_primitives"] = results["why_primitives"] || [];
         results["why_primitives"].push({
             prevStr: JSON.stringify(o1),
             nextStr: JSON.stringify(o2)
         });
     } else {
-        results["why_errors"] = results["why_errors"] || [];
         results["why_errors"].push({
-            err: "Objects are of different type.",
+            err: "Objects are of different type. Did not convert to string.",
             prevStr: o1,
             nextStr: o2
         });
     }
-
-
 
     return results;
 }
