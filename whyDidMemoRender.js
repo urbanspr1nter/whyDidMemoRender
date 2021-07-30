@@ -108,6 +108,11 @@ export function diffReporter(results) {
 // First Level diffing
 function diffProps(o1, o2) {
     const results = {};
+
+    if (!o2) {
+        return results;
+    }
+
     const o2Keys = Object.keys(o2);
 
     for(const k of o2Keys) {
