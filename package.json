@@ -1,7 +1,8 @@
 {
   "name": "why-did-memo-render",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "whyDidMemoRender will give hints about what props triggered a React memo component to render",
+  "types": "types.d.ts",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
