@@ -43,10 +43,13 @@ import { isEqual } from "lodash";
             }
         }
     }
+    console.log("%c WHY RESULTS", "font-size: medium; font-weight: bold");
     if (Object.keys(results).length > 0) {
-        console.log(tag, `*** Why did ${displayName} render? *** Results`, results);
+        console.log("%c 🔥🔄🔥 WILL RENDER", "font-weight: bold");
+        console.log(`${tag} *** Why did ${displayName} render? *** Results`, results);
     } else {
-        console.log(tag, `*** ${displayName} WILL NOT render ***`, results);
+        console.log("%c 🛑⏹️🛑 WONT RENDER", "font-weight: bold");
+        console.log(`${tag} *** ${displayName} WILL NOT render ***`, results);
     }
 
     console.log(tag, displayName, "---- END RENDER ----");
@@ -113,24 +116,53 @@ function diffProps(o1, o2) {
         return results;
     }
 
-    const o2Keys = Object.keys(o2);
+    if (typeof o1 === "object" && typeof o2 === "object") {
+        const o2Keys = Object.keys(o2);
 
-    for(const k of o2Keys) {
-        if (!_.isEqual(o1[k], o2[k])) {
-            try {
-                results[k] = {
-                    prevStr: JSON.stringify(o1[k]),
-                    nextStr: JSON.stringify(o2[k])
-                };
-            } catch(error) {
-                results[k] = {
-                    err: "Could not stringify. Objects used instead for user handling of comparison",
-                    prevStr: o1[k],
-                    nextStr: o2[k]
+        for(const k of o2Keys) {
+            if (!_.isEqual(o1[k], o2[k])) {
+                try {
+                    results[k] = {
+                        prevStr: JSON.stringify(o1[k]),
+                        nextStr: JSON.stringify(o2[k])
+                    };
+                } catch(error) {
+                    results[k] = {
+                        prevStr: o1[k],
+                        nextStr: o2[k]
+                    };
+                    results["why_warnings"] = results["why_warnings"] || [];
+                    results["why_warnings"].push({
+                        err: "Could not stringify. Objects used instead for user handling of comparison",
+                        k,
+                        prevStr: o1[k],
+                        nextStr: o2[k]
+                    });
                 }
             }
         }
+    } else if(typeof o1 === "function" && typeof o2 === "function") {
+        results["why_functions"] = results["why_functions"] || [];
+        results["why_functions"] = results.push({
+            prevStr: o1.toString(),
+            nextStr: o2.toString()
+        });
+    } else if(typeof o1 === typeof o2) {
+        results["why_primitives"] = results["why_primitives"] || [];
+        results["why_primitives"].push({
+            prevStr: JSON.stringify(o1),
+            nextStr: JSON.stringify(o2)
+        });
+    } else {
+        results["why_errors"] = results["why_errors"] || [];
+        results["why_errors"].push({
+            err: "Objects are of different type.",
+            prevStr: o1,
+            nextStr: o2
+        });
     }
+
+
 
     return results;
 }
