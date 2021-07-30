@@ -52,7 +52,7 @@ import { isEqual, isNil } from "lodash";
         console.log(`${tag} ${displayName} RESULTS`, results);
     }
     return {
-        compareResult: comparer ? comparer() : prevProps === nextProps,
+        compareResult: comparer ? comparer(prevProps, nextProps) : prevProps === nextProps,
         report: results
     };
 }
