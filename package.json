@@ -1,6 +1,6 @@
 {
   "name": "why-did-memo-render",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "whyDidMemoRender will give hints about what props triggered a React memo component to render",
   "types": "types.d.ts",
   "main": "index.js",

@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, isNil } from "lodash";
 
 /**
  * whyDidMemoRender
@@ -42,14 +42,14 @@ import { isEqual } from "lodash";
         }
     }
 
-    console.log("%cWHY RESULTS", "font-size: medium; font-weight: bold");
+    console.log("%cWHY RESULTS", "font-size: medium; font-weight: bold;");
     console.log(tag, displayName, "Props are prev, next", prevProps, nextProps);
     if (Object.keys(results).length > 0) {
-        console.log("%cWILL RENDER", "font-weight: bold");
-        console.log(`${tag} *** ${displayName} RESULTS ***`, results);
+        console.log(`%c ${tag} 🔥🔄🔥 WILL RENDER`, "font-weight: bold");
+        console.log(`${tag} ${displayName} RESULTS:`, results);
     } else {
-        console.log("%cWONT RENDER", "font-weight: bold");
-        console.log(`${tag} *** ${displayName} RESULTS ***`, results);
+        console.log(`%c ${tag} 🛑⏹️🛑 WONT RENDER`, "font-weight: bold");
+        console.log(`${tag} ${displayName} RESULTS`, results);
     }
     return {
         compareResult: comparer ? comparer() : prevProps === nextProps,
@@ -109,7 +109,7 @@ export function diffReporter(results) {
 function diffProps(o1, o2) {
     const results = {};
 
-    if (!o1 && !o2) {
+    if (isNil(o1) && isNil(o2)) {
         return results;
     }
 
@@ -118,27 +118,27 @@ function diffProps(o1, o2) {
     results["why_primitives"] = [];
     results["why_errors"] = [];
 
-    if (!o1 || !o2) {
-        if ((!o1 && o2 && typeof o2 === "object")
-                || (!o2 && o1 && typeof o1 === "object")) {
+    if (isNil(o1) || isNil(o2)) {
+        if ((isNil(o1) && o2 && typeof o2 === "object")
+                || (isNil(o2) && o1 && typeof o1 === "object")) {
             results["why_warnings"].push({
                 message: "one of the objects is null, or undefined",
                 prevStr: o1,
                 nextStr: o2
             });
-        } else if(!o1 && o2 && typeof o2 === "function") {
+        } else if(isNil(o1) && o2 && typeof o2 === "function") {
             results["why_warnings"].push({
                 message: "one of the objects is null, or undefined",
                 prevStr: o1,
                 nextStr: o2.toString()
             });
-        } else if(!o2 && o1 && typeof o1 === "function") {
+        } else if(isNil(o2) && o1 && typeof o1 === "function") {
             results["why_warnings"].push({
                 message: "one of the functions is null, or undefined",
                 prevStr: o1.toString(),
                 nextStr: o2
             });
-        } else if(!o1 || !o2) {
+        } else {
             results["why_warnings"].push({
                 message: "one of the props is null, or undefined",
                 prevStr: o1 ? JSON.stringify(o1) : o1,
