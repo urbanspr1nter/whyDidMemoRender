@@ -167,7 +167,7 @@ function diffProps(o1, o2) {
             }
         }
     } else if(typeof o1 === "function" && typeof o2 === "function") {
-        results["why_functions"] = results.push({
+        results["why_functions"].push({
             prevStr: o1.toString(),
             nextStr: o2.toString()
         });
