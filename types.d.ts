@@ -13,8 +13,9 @@ declare module "why-did-memo-render" {
      * @param {*} displayName name of the memoized component
      * @param {*} prevProps previous props that is used in render
      * @param {*} nextProps next props that will be used in render
+     * @param {*} comparer optional comparison function
      */
-    export function whyDidMemoRender(tag: string, displayName: string, prevProps: any, nextProps: any): any;
+    export function whyDidMemoRender(tag: string, displayName: string, prevProps: any, nextProps: any, comparer?: () => boolean): any;
 
     /**
      * Used as an adapter to whyDidMemoRender for the React.memo comparer function
